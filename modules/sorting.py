@@ -148,7 +148,7 @@ def merge_sort_v2(data: List[int]) -> List[int]:
             k += 1
 
 
-def merge_sort(xs) -> None:
+def merge_sort_v3(xs) -> None:
 
     unit = 1
     while unit <= len(xs):
@@ -156,10 +156,8 @@ def merge_sort(xs) -> None:
         for h in range(0, len(xs), unit * 2):
             l, r = h, min(len(xs), h + 2 * unit)
             mid = h + unit
-            # merge xs[h:h + 2 * unit]
             p, q = l, mid
             while p < mid and q < r:
-                # use <= for stable merge merge
                 if xs[p] <= xs[q]:
                     p += 1
                 else:
@@ -172,5 +170,6 @@ def merge_sort(xs) -> None:
         
     return xs
 
-def sort_append(final, array):
-    return final.append(merge_sort(array))
+
+def append_sorted_list(result_manager, array):
+    return result_manager.append(merge_sort_v3(array))
