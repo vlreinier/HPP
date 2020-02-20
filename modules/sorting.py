@@ -1,4 +1,5 @@
 from typing import List
+import time
 
 def selection_sort(data: List[int]) -> None:
     """Sort an array using selection sort"""
@@ -150,6 +151,8 @@ def merge_sort_v2(data: List[int]) -> List[int]:
 
 def merge_sort_v3(xs) -> None:
 
+    start = time.time()
+
     unit = 1
     while unit <= len(xs):
         h = 0
@@ -167,9 +170,11 @@ def merge_sort_v3(xs) -> None:
                     p, mid, q = p + 1, mid + 1, q + 1
 
         unit *= 2
-        
-    return xs
+    
+    end = time.time() - start
+
+    return xs, end
 
 
 def append_sorted_list(result_manager, array):
-    return result_manager.append(merge_sort_v3(array))
+    return result_manager.append(merge_sort_v3(array)[0])
