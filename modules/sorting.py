@@ -172,5 +172,5 @@ def merge_sort(xs) -> None:
         
     return xs
 
-def merge_sort_to_array(result_manager, array):
-    return result_manager.append(merge_sort(array))
+def sort_append(final, array):
+    return final.append(merge_sort(array))
