@@ -1,5 +1,4 @@
 from typing import List
-import time
 
 def selection_sort(data: List[int]) -> None:
     """Sort an array using selection sort"""
@@ -61,120 +60,68 @@ def recursive_insertion(element: int, data: List[int]) -> List[int]:
             return [element, head] + tail # place it on the front
         else:
             return [head] + recursive_insertion(element, tail) # else, keep the head separate, and recursively insert into the tail
-        
 
-def merge_sort(data: List[int]) -> None:
-    merge_sort2(data, 0, len(data)-1)
+def merge(left, right):
+    """Merge sort merging function."""
 
-def merge_sort2(data: List[int], low: int, high: int) -> None:
-    """Split data, sort subarrays and merge them into sorted array."""
-    # test base case size of array equals 1
-    if (high - low) >= 1: # if not base case
-        middle1 = (low + high) // 2 # calculate middle of the array
-        middle2 = middle1 + 1 # calculate next element over
-
-        # split array in half then sort each half (recursive calls)
-        merge_sort2(data, low, middle1) # first half of the array
-        merge_sort2(data, middle2, high) # second half of the array
-
-        # merge two sorted arrays after split calls return
-        merge(data, low, middle1, middle2, high)
-
-# merge two sorted subarrays into one sorted subarray
-def merge(data: List[int], left: int, middle1: int, middle2: int, right: int) -> None:
-    left_index = left # index into left subarray
-    right_index = middle2 # index into right subarray
-    combined_index = left # index into temporary working array
-    merged = [0] * len(data) # working array
-
-    # merge arrays until reaching end of either
-    while left_index <= middle1 and right_index < right:
-        # place smaller of two current elements into result
-        # and move to next space in arrays
-        if data[left_index] <= data[right_index]:
-            merged[combined_index] = data[left_index]
-            combined_index += 1
+    left_index, right_index = 0, 0
+    result = []
+    while left_index < len(left) and right_index < len(right):
+        if left[left_index] < right[right_index]:
+            result.append(left[left_index])
             left_index += 1
         else:
-            merged[combined_index] = data[right_index]
-            combined_index += 1
+            result.append(right[right_index])
             right_index += 1
 
-    # if left array is empty
-    if left_index == middle2: # if True, copy in rest of right array
-        merged[combined_index:right + 1] = data[right_index:right + 1]
-    else: # right array is empty, copy in rest of left array
-        merged[combined_index:right + 1] = data[left_index: middle1 + 1]
-
-    data[left:right + 1] = merged[left:right + 1] # copy back to data
-
-def merge_sort_v2(data: List[int]) -> List[int]:
-    if len(data) > 1:
-        mid = len(data) // 2
-        left = data[:mid]
-        right = data[mid:]
-
-        # Recursive call on each half
-        merge_sort(left)
-        merge_sort(right)
-
-        # Two iterators for traversing the two halves
-        i = 0
-        j = 0
-        
-        # Iterator for the main list
-        k = 0
-        
-        while i < len(left) and j < len(right):
-            if left[i] < right[j]:
-              # The value from the left half has been used
-              data[k] = left[i]
-              # Move the iterator forward
-              i += 1
-            else:
-                data[k] = right[j]
-                j += 1
-            # Move to the next slot
-            k += 1
-
-        # For all the remaining values
-        while i < len(left):
-            data[k] = left[i]
-            i += 1
-            k += 1
-
-        while j < len(right):
-            data[k]=right[j]
-            j += 1
-            k += 1
+    result += left[left_index:]
+    result += right[right_index:]
+    return result
 
 
-def merge_sort_v3(xs) -> None:
+def merge_sort_recursive(array):
+    """Merge sort algorithm implementation."""
 
-    start = time.time()
+    if len(array) <= 1:  # base case
+        return array
+
+    # divide array in half and merge sort recursively
+    half = len(array) // 2
+    left = merge_sort_recursive(array[:half])
+    right = merge_sort_recursive(array[half:])
+
+    return merge(left, right)
+
+def merge_sort_iterative(array) -> None:
 
     unit = 1
-    while unit <= len(xs):
+
+    while unit <= len(array):
+
         h = 0
-        for h in range(0, len(xs), unit * 2):
-            l, r = h, min(len(xs), h + 2 * unit)
+
+        for h in range(0, len(array), unit * 2):
+
+            l, r = h, min(len(array), h + 2 * unit)
             mid = h + unit
             p, q = l, mid
+
             while p < mid and q < r:
-                if xs[p] <= xs[q]:
+                if array[p] <= array[q]:
                     p += 1
                 else:
-                    tmp = xs[q]
-                    xs[p + 1: q + 1] = xs[p:q]
-                    xs[p] = tmp
+                    tmp = array[q]
+                    array[p + 1: q + 1] = array[p:q]
+                    array[p] = tmp
                     p, mid, q = p + 1, mid + 1, q + 1
 
         unit *= 2
-    
-    end = time.time() - start
 
-    return xs, end
+    return array
 
 
-def append_sorted_list(result_manager, array):
-    return result_manager.append(merge_sort_v3(array)[0])
+def append_sorted_list(function, result_manager, array):
+    return result_manager.append(function(array))
+
+def append_merged_lists(result_manager, left, right):
+    return result_manager.append(merge(left, right))
