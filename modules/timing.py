@@ -10,5 +10,5 @@ def get_timing(function, to_iterate, repeat=1):
         string += "List size: "+str(len(i))+" | "+"Time in sec: "+'{:f}'.format(timing)+"\n"
     return string, lib
 
-def function_timing(function, repeat, *argv):
-    return timeit.timeit(lambda: function(*argv), number=repeat)
+def function_timing(function, repeat=1, **kwargs):
+    return timeit.timeit(lambda: function(**kwargs), number=repeat)
