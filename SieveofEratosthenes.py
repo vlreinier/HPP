@@ -12,7 +12,7 @@ def is_prime(num):
     if num in [0, 1]:
         return False
 
-    # Check if given num is a prime by comparing remainder (can be done with OpenMP)
+    # Check if given num is a prime by comparing remainder (pymp loop)
     for j in range(2, num):
         if num % j == 0:
             return False
@@ -38,10 +38,7 @@ if __name__ == '__main__':
             start_time = time.time()
 
         # Distribute work over processes using stripes
-        local_primes = []
-        for i in range(rank, N + 1, cores):
-            if is_prime(i):
-                local_primes.append(i)
+        local_primes = [i for i in range(rank, N + 1, cores) if is_prime(i)]
 
         # Add locally found primes with all primes as nested list
         all_primes = comm.gather(local_primes, root=0)
