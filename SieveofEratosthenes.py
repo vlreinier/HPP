@@ -3,6 +3,8 @@ import time
 from mpi4py import MPI
 import sys
 from sympy import primerange
+from modules.timing import function_timing
+
 
 def is_prime(num):
 
@@ -10,12 +12,13 @@ def is_prime(num):
     if num in [0, 1]:
         return False
 
-    # Check if given num is a prime
+    # Check if given num is a prime by comparing remainder (can be done with OpenMP)
     for j in range(2, num):
         if num % j == 0:
             return False
 
     return True
+
 
 if __name__ == '__main__':
 
@@ -30,7 +33,7 @@ if __name__ == '__main__':
 
         # Initiate empty array to collect all primes from all processes
         if rank == 0:
-            print("\n\nFinding primes with the sieve of Eratosthenes:")
+            print("\n\nSieve of Eratosthenes")
             all_primes = []
             start_time = time.time()
 
@@ -46,9 +49,9 @@ if __name__ == '__main__':
         # Print results
         if rank == 0:
             result = sorted([j for i in all_primes for j in i])
-            verification = list(primerange(0, N + 1))
-            print("\nCorrect result: " + str(result == verification))
-            print("Running time: {}\n\n".format(str(time.time() - start_time)))
+            end_time = time.time() - start_time
+            print("Correct: " + str(result == list(primerange(0, N + 1))))
+            print("Runtime: {:f}\n\n".format(end_time))
 
     else:
         print("Please provide argument for N number of primes!")
