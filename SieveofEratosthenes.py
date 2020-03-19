@@ -1,52 +1,54 @@
 #!/usr/bin/env python
-import pymp
-import timeit
+import time
 from mpi4py import MPI
+import sys
+from sympy import primerange
 
+def is_prime(num):
 
-def function_timing(function, repeat=1, **kwargs):
-    return timeit.timeit(lambda: function(**kwargs), number=repeat)
+    # Zero or one are never primes
+    if num in [0, 1]:
+        return False
 
+    # Check if given num is a prime
+    for j in range(2, num):
+        if num % j == 0:
+            return False
 
-def Sieve_Of_Eratosthenes(N):
-
-    rank = comm.Get_rank()
-    if rank == 0:
-        print('\nSieve of Eratosthenes in parallel\nUsed MPI processes: {}\n'.format(cores))
-    print(rank)
-
-    """
-    Lists in Python are thread safe, although is does not really
-    matter if values are updated at the same time,
-    because they can only be changed to False
-    """
-    sieve = [True for i in range(N + 1)]  # include N
-    sieve[0] = False
-    sieve[1] = False
-
-    k = 2
-    while k ** 2 <= N:
-        
-        for i in range(k ** 2, N + 1):
-            if i % k == 0:
-                sieve[i] = False
-                
-        for i in range(k + 1, N + 1):
-            if sieve[i]:
-                k = i
-                break
-
-    results = []
-    for i in range(N + 1):
-        if sieve[i]:
-            results.append(i)
-
-    return results
-
+    return True
 
 if __name__ == '__main__':
 
-    comm = MPI.COMM_WORLD
-    cores = comm.Get_size()
+    # N argument must be given
+    if len(sys.argv) == 2:
+        
+        # Initiate MPI variables
+        comm = MPI.COMM_WORLD
+        cores = comm.Get_size()
+        rank = comm.Get_rank()
+        N = int(sys.argv[1])
 
-    print(Sieve_Of_Eratosthenes(29))
+        # Initiate empty array to collect all primes from all processes
+        if rank == 0:
+            print("\n\nFinding primes with the sieve of Eratosthenes:")
+            all_primes = []
+            start_time = time.time()
+
+        # Distribute work over processes using stripes
+        local_primes = []
+        for i in range(rank, N + 1, cores):
+            if is_prime(i):
+                local_primes.append(i)
+
+        # Add locally found primes with all primes as nested list
+        all_primes = comm.gather(local_primes, root=0)
+
+        # Print results
+        if rank == 0:
+            result = sorted([j for i in all_primes for j in i])
+            verification = list(primerange(0, N + 1))
+            print("\nCorrect result: " + str(result == verification))
+            print("Running time: {}\n\n".format(str(time.time() - start_time)))
+
+    else:
+        print("Please provide argument for N number of primes!")
