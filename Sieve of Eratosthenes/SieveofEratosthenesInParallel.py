@@ -30,34 +30,17 @@ if __name__ == '__main__':
         if start == 0:
             start = 2
 
-        # Create sieve
-        sieve = []
-
-        # Finding primes
-        while start <= end ** 0.5:
-
-            for i in range(start**2, end):
-                if i % start == 0:
-                    sieve[i] = False
-
-            for i in range(sieve.index(start), len(sieve)):
-                k = sieve[i]
-                if k:
-                    start = k
-                    break
-
-        # Extracting
-        results = []
-        for i in sieve:
-            if i:
-                results.append(i)
-        #print(results)
-
-        out = comm.gather(results, root=0)
+        sieve = set()
+        for K in range(2, int(N**0.5) + 1):
+            for i in range(max(start, K**2), end):
+                if i % K == 0:
+                    sieve.add(i)
+            
+        all_primes = comm.gather([i for i in range(start, end) if not i in sieve], root=0)
         
         if rank == 0:
-            data = sorted([j for i in out for j in i])
-            print(data)
+            data = [j for i in all_primes for j in i]
+            #print(data)
             print(len(data))
             print(data == list(primerange(0, N)))
             print(time.time() - start_time)
