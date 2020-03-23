@@ -30,20 +30,32 @@ if __name__ == '__main__':
         if start == 0:
             start = 2
 
-        sieve = set()
-        for K in range(2, int(N**0.5) + 1):
+        # Create empty local sieve
+        sieve = set() 
+
+        # Save non primes
+        K = 2
+        while K <= N**0.5:
+            
             for i in range(max(start, K**2), end):
                 if i % K == 0:
                     sieve.add(i)
-            
+
+            K+=1
+
+        # Gather and combine all local primes
         all_primes = comm.gather([i for i in range(start, end) if not i in sieve], root=0)
         
+        # Print results
         if rank == 0:
             data = [j for i in all_primes for j in i]
+            end_time = time.time()
+            verify_data = list(primerange(0, N))
             #print(data)
-            print(len(data))
-            print(data == list(primerange(0, N)))
-            print(time.time() - start_time)
+            print("\nN: " + str(N-1))
+            print("Length comparison: " + str(len(data) == len(verify_data)))
+            print("Result comparison: " + str(data == verify_data))
+            print("Runtime: {:f} seconds\n".format(end_time - start_time))
 
     else:
         print("Please provide argument for N number of primes!")
