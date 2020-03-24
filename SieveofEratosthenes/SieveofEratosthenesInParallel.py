@@ -36,12 +36,16 @@ if __name__ == '__main__':
         # Save non primes
         K = 2
         while K <= N**0.5:
-            
-            for i in range(max(start, K**2), end):
+
+            for i in range(K**2, end):
                 if i % K == 0:
                     sieve.add(i)
 
-            K+=1
+            for i in range(K+1, end):
+                if not i in sieve:
+                    K = i
+                    break
+
 
         # Gather and combine all local primes
         all_primes = comm.gather([i for i in range(start, end) if not i in sieve], root=0)
@@ -51,9 +55,8 @@ if __name__ == '__main__':
             data = [j for i in all_primes for j in i]
             end_time = time.time()
             verify_data = list(primerange(0, N))
-            #print(data)
             print("\nN: " + str(N-1))
-            print("Length comparison: " + str(len(data) == len(verify_data)))
+            print("Length comparison: {} == {} = {}".format(str(len(data)), str(len(verify_data)), str(len(data) == len(verify_data))))
             print("Result comparison: " + str(data == verify_data))
             print("Runtime: {:f} seconds\n".format(end_time - start_time))
 
