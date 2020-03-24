@@ -51,12 +51,13 @@ if __name__ == '__main__':
         
         # Print results
         if rank == 0:
-            data = [j for i in all_primes for j in i]
+            results = [j for i in all_primes for j in i]
             end_time = time.time()
-            verify_data = list(primerange(0, N))
+            verify_results = list(primerange(0, N))
             print("\nN: " + str(N-1))
-            print("Length comparison: {} == {} = {}".format(str(len(data)), str(len(verify_data)), str(len(data) == len(verify_data))))
-            print("Result comparison: " + str(data == verify_data))
+            print("Length comparison: {} == {} = {}".format(str(len(results)),
+                str(len(verify_results)), str(len(results) == len(verify_results))))
+            print("Result comparison: " + str(results == verify_results))
             print("Runtime: {:f} seconds\n".format(end_time - start_time))
 
     else:

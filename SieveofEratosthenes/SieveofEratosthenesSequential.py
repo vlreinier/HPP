@@ -15,7 +15,7 @@ if __name__ == '__main__':
         sieve[0] = False
         sieve[1] = False
 
-        # Finding primes
+        # Finding non primes
         k = 2
         while k <= N**0.5:
 
@@ -28,15 +28,15 @@ if __name__ == '__main__':
                     k = i
                     break
 
-        # Extracting
-        results = []
-        for i in range(N):
-            if sieve[i]:
-                results.append(i)
-        
-        print(len(results))
-        print(results == list(primerange(0, N)))
-        print(time.time() - start_time)
+        # Extracting primes and print results
+        results = [i for i in range(N) if sieve[i]]
+        end_time = time.time()
+        verify_results = list(primerange(0, N))
+        print("\nN: " + str(N-1))
+        print("Length comparison: {} == {} = {}".format(str(len(results)),
+            str(len(verify_results)), str(len(results) == len(verify_results))))
+        print("Result comparison: " + str(results == verify_results))
+        print("Runtime: {:f} seconds\n".format(end_time - start_time))
 
     else:
         print("Please provide argument for N number of primes!")
