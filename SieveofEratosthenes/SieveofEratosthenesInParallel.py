@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
         # Save non primes
         K = 2
-        while K <= N**0.5:
+        while K <= end**0.5:
 
             for i in range(K**2, end):
                 if i % K == 0:
@@ -45,7 +45,6 @@ if __name__ == '__main__':
                 if not i in sieve:
                     K = i
                     break
-
 
         # Gather and combine all local primes
         all_primes = comm.gather([i for i in range(start, end) if not i in sieve], root=0)
