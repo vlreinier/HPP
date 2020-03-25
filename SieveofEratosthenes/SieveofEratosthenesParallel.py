@@ -31,17 +31,20 @@ if __name__ == '__main__':
             start = 2
 
         # Create empty local sieve
-        sieve = set() 
+        sieve = set()
 
         # Save non primes
         K = 2
         while K <= end**0.5:
 
-            for i in range(max(start, K**2), end):
+            for i in range(K**2, end):
                 if i % K == 0:
                     sieve.add(i)
 
-            K+=1
+            for i in range(K+1, end): 
+                if not i in sieve:
+                    K = i
+                    break
 
         # Gather and combine all local primes
         all_primes = comm.gather([i for i in range(start, end) if not i in sieve], root=0)
